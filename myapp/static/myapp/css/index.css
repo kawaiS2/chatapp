@@ -1,0 +1,17 @@
+.login, .signup{
+    position: relative;
+    text-align: center;
+    top:40vh;
+}
+
+.signup{
+    top:50vh;
+}
+
+.login_btn, .signup_btn{
+    padding:10px 50px;
+    margin:20px;
+    border:1px solid #000;
+    text-decoration: none;
+    border-radius: 10px;
+}
