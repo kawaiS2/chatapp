@@ -1,34 +1,35 @@
-from django import forms
 from django.shortcuts import redirect, render
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm, LoginForm
+from .forms import LoginForm, SignUpForm
+from .models import CustomUser
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView
-from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http.response import HttpResponseRedirect
 
 def index(request):
     return render(request, "myapp/index.html")
 
-class signup_view(CreateView):
-    form_class = SignUpForm
-    template_name = "myapp/signup.html"
-    def get_success_url(self):
-        return reverse('index')
+def signup_view(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('index')  
+    else:
+        form = SignUpForm()
 
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        self.object = user
-        return HttpResponseRedirect(self.get_success_url())
+    context = {'form': form}
+    return render(request, 'myapp/signup.html', context)
 
-class friends(LoginRequiredMixin, TemplateView):
-    template_name = 'myapp/friends.html'
-    login_url = '/login/'
+def friends_list(request):
+    friends = CustomUser.objects.all()  
+
+    context = {
+        'CustomUser': friends
+    }
+    return render(request, 'myapp/friends.html', context)
     
 class login_view(LoginView):
     template_name = 'myapp/login.html'

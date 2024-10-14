@@ -1,0 +1,18 @@
+{% extends 'myapp/base.html' %}
+
+{% block content %}
+<ul>
+    {% for friend in CustomUser %}
+    <li>
+        <div class="friend">
+        {% if friend.image %}
+            <img src="{{ friend.image.url }}" alt="{{ friend.username }}'s profile" width="50" height="50">
+        {% endif %}
+        {{ friend.username }}
+        </div>
+    </li>
+    {% empty %}
+    <li>No friends found.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
