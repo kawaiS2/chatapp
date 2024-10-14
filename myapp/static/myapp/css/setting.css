@@ -1,0 +1,13 @@
+h1{
+    font-size: medium;
+}
+
+div{
+    text-align: center;
+}
+
+a{
+    padding:20px 40px;
+    border:1px solid #000;
+    text-decoration: none;
+}

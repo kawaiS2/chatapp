@@ -9,7 +9,12 @@ urlpatterns = [
     path('login', views.login_view.as_view(), name='login_view'),
     path('friends', views.friends_list, name='friends'),
     path('talk_room', views.talk_room, name='talk_room'),
-    path('setting', views.setting, name='setting')
+    path('setting', views.setting, name='setting'),
+    path('name_change', views.name_change, name='name_change'),
+    path('email_change', views.email_change, name="email_change"),
+    path('image_change', views.image_change, name="image_change"),
+    path('password_change', views.password_change, name="password_change"),
+    path('logout/', views.Logout.as_view(), name='logout'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,10 @@
+{% extends 'myapp/base.html' %}
+{% load static %}
+
+{% block header-title %}
+<h1>ログアウト</h1>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'logout' %}">Logout</a>
+{% endblock %}

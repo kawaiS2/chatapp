@@ -1,18 +1,30 @@
 {% extends 'myapp/base.html' %}
+{% load static %}
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/friends.css' %}" />
+{% endblock %}
+
+{% block header-title %}
+<h1>友達</h1>
+{% endblock %}
 
 {% block content %}
+<div class="friends_list">
 <ul>
     {% for friend in CustomUser %}
     <li>
-        <div class="friend">
-        {% if friend.image %}
-            <img src="{{ friend.image.url }}" alt="{{ friend.username }}'s profile" width="50" height="50">
-        {% endif %}
+        <a class="friend" href="">
+             {% if friend.image %}
+                <img src="{{ friend.image.url }}" alt="{{ friend.username }}'s profile" width="50" height="50" class="friend_img">
+            {% endif %}
+        <div class="friend_name">
         {{ friend.username }}
         </div>
+        </a><br><br>
     </li>
     {% empty %}
     <li>No friends found.</li>
     {% endfor %}
 </ul>
+</div>
 {% endblock %}

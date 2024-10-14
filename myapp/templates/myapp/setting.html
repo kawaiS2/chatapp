@@ -1,1 +1,29 @@
-S
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/setting.css' %}" />
+{% endblock %}
+
+{% block header-title %}
+<h1>設定</h1>
+{% endblock %}
+
+{% block content %}
+<div><br><br>
+<a href="{% url 'name_change' %}">
+    ユーザー名変更
+</a><br><br><br><br>
+<a href="{% url 'email_change' %}">
+    メールアドレス<wbr>変更
+</a><br><br><br><br>
+<a href="{% url 'image_change' %}">
+    アイコン変更
+</a><br><br><br><br>
+<a href="{% url 'password_change' %}">
+    パスワード変更
+</a><br><br><br><br>
+<a href="{% url 'login_view' %}">
+    ログアウト
+</a>
+</div>
+{% endblock %}
