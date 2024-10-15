@@ -10,24 +10,20 @@ ul{
     list-style-type: none;
 }
 
-a{
-    position: relative;
-    padding: 20px;
-    width:100vw;
+.user-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
     border: 1px solid #000;
-    text-decoration: none;
+    border-radius: 5px;
 }
-
-.friend_img{
-    position:absolute;
-    left:10px;
-    top:2px;
+.user-card img {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    border:3px solid #000;
-    position: absolute
+    margin-right: 10px;
 }
-
-.friend_name{
-    position: absolute;
-    left:70px;
+.user-card div {
+    flex: 1;
 }

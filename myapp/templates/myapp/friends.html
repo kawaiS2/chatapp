@@ -10,21 +10,19 @@
 
 {% block content %}
 <div class="friends_list">
-<ul>
-    {% for friend in CustomUser %}
-    <li>
-        <a class="friend" href="">
-             {% if friend.image %}
-                <img src="{{ friend.image.url }}" alt="{{ friend.username }}'s profile" width="50" height="50" class="friend_img">
-            {% endif %}
-        <div class="friend_name">
-        {{ friend.username }}
-        </div>
-        </a><br><br>
-    </li>
-    {% empty %}
-    <li>No friends found.</li>
-    {% endfor %}
-</ul>
+    <ul>
+        {% for data in user_data %}
+            <li class="user-card">
+                {% if data.user.image %}
+                    <img src="{{ data.user.image.url }}" alt="Profile Image">
+                {% endif %}
+                <div>
+                    <a href="{% url 'talk_room' data.user.id %}">{{ data.user.username }}</a><br>
+                    <small>{{ data.last_message }}</small><br>
+                    <small>{{ data.timestamp|date:"Y-m-d H:i" }}</small>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}

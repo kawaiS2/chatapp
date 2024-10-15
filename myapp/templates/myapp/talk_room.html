@@ -1,1 +1,32 @@
-TR
+{% extends 'myapp/base.html' %}
+{% load static %}
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'myapp/css/talk_room.css' %}" />
+{% endblock %}
+
+{% block header-title %}
+<div class="header_wrapper">
+<a href="{% url 'friends' %}" class="back">戻る</a>
+ Chat with {{ user2.username }}
+</div>
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h3>Messages:</h3>
+        <ul>
+            {% for message in messages %}
+                <li><strong>{{ message.sender.username }}:</strong> {{ message.content }} <em>({{ message.timestamp }})</em></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="content" rows="3" cols="50" placeholder="Type your message..."></textarea><br>
+        <button type="submit">送信</button>
+    </form>
+
+    
+{% endblock %}
+
