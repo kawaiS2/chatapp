@@ -9,6 +9,12 @@
 {% endblock %}
 
 {% block content %}
+
+<form method="GET" action="{% url 'friends' %}">
+    <input type="text" name="q" placeholder="Search friends" value="{{ query }}">
+    <button type="submit">Search</button>
+</form>
+
 <div class="friends_list">
     <ul>
         {% for data in user_data %}
@@ -18,7 +24,7 @@
                 {% endif %}
                 <div>
                     <a href="{% url 'talk_room' data.user.id %}">{{ data.user.username }}</a><br>
-                    <small>{{ data.last_message }}</small><br>
+                    <small>{{ data.latest_message }}</small><br>
                     <small>{{ data.timestamp|date:"Y-m-d H:i" }}</small>
                 </div>
             </li>

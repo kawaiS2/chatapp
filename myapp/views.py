@@ -1,55 +1,74 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from .forms import LoginForm, SignUpForm, NameChangeForm, EmailChangeForm, ImageChangeForm
+from .forms import NameChangeForm, EmailChangeForm, ImageChangeForm
 from .models import ChatRoom, Message
-from django.shortcuts import render
+from accounts.models import CustomUser
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
+from django.db.models import Q, OuterRef, Subquery
+from django.db.models.functions import Coalesce
+from django.utils import timezone
+
 
 def index(request):
     return render(request, "myapp/index.html")
 
-def signup_view(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('index')  
-    else:
-        form = SignUpForm()
-
-    context = {'form': form}
-    return render(request, 'myapp/signup.html', context)
-    
-class login_view(LoginView):
-    template_name = 'myapp/login.html'
-    form_class = LoginForm
-
 User = get_user_model()
 
-@login_required
+from django.db.models import OuterRef, Subquery
+from django.db.models.functions import Coalesce
+from django.utils import timezone
+from django.db.models import Q
+
 def friends(request):
-    users = User.objects.exclude(id=request.user.id)
+    query = request.GET.get('q')
+    if query:
+        friends = CustomUser.objects.filter(
+            Q(username__icontains=query)| Q(email__icontains=query)
+        ).exclude(id=request.user.id).select_related()
+    else:
+        friends = CustomUser.objects.exclude(id=request.user.id).select_related()
+
+    friends_ids = friends.values_list("pk", flat=True)
+
+    rooms = ChatRoom.objects.filter(
+        (Q(user1=request.user) & Q(user2__in=friends_ids)) |
+        (Q(user2=request.user) & Q(user1__in=friends_ids))
+    ).select_related('user1', 'user2') 
+    
+    latest_messages = Message.objects.filter(
+        room=OuterRef('pk')
+    ).order_by('-timestamp')
+
+    rooms = rooms.annotate(
+        latest_message_content=Subquery(latest_messages.values('content')[:1]),
+        latest_message_timestamp=Coalesce(Subquery(latest_messages.values('timestamp')[:1]), timezone.now())
+    )
+
+    room_dict = {}
+    for room in rooms:
+        friend_id = room.user1_id if room.user2 == request.user else room.user2_id
+        room_dict[friend_id] = room
+
     user_data = []
 
-    for user in users:
-        # ルームを取得（存在しない場合はNone）
-        room = ChatRoom.objects.filter(
-            user1=min(request.user, user, key=lambda u: u.id),
-            user2=max(request.user, user, key=lambda u: u.id)
-        ).first()
-
-        last_message = room.messages.order_by('-timestamp').first() if room else None
-
+    for friend in friends:
+        room = room_dict.get(friend.id)
         user_data.append({
-            'user': user,
-            'last_message': last_message.content if last_message else '',
-            'timestamp': last_message.timestamp if last_message else None,
+            'user': friend,
+            'latest_message': room.latest_message_content if room else '',
+            'timestamp': room.latest_message_timestamp if room else None,
         })
 
-    return render(request, 'myapp/friends.html', {'user_data': user_data})
+    context = {
+        'user_data': user_data,
+        'query': query,
+    }
+
+    return render(request, 'myapp/friends.html', context)
+
 
 @login_required
 def talk_room(request, user_id):
